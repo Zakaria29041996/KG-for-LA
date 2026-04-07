@@ -1,0 +1,110 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@prefix ex: <http://example.com/ns#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix ext: <http://smart.uliege.be/prov-extension#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+<http://example.com/base/#DrillSource>  a d2rq:Database ;
+  d2rq:jdbcDSN "jdbc:drill:drillbit=localhost" ;  
+  d2rq:jdbcDriver "org.apache.drill.jdbc.Driver" ;
+  d2rq:username "" ;
+  d2rq:password "" .
+
+# ===============================
+# Logical Source
+# ===============================
+<#LogicalSourceVerbObject> 
+    rml:source <http://example.com/base/#DrillSource> ;
+    rml:referenceFormulation rml:SQL2008Query ;
+    rml:iterator """
+SELECT 
+    t1.flatdata.id AS id,
+    INITCAP(REGEXP_REPLACE(t1.flatdata.`verb`.id, '.*/', '')) AS Verb,
+    REGEXP_REPLACE(t1.flatdata.`verb`.id, '.*/', '') AS Verbmin,
+    t1.flatdata.actor.account.name AS actor_account_name,
+    t1.flatdata.`timestamp` AS ts,
+    REGEXP_REPLACE(t1.flatdata.`object`.id, '.*/', '') AS ObjectId,
+    INITCAP(REGEXP_REPLACE(t1.flatdata.`object`.definition.`type`, '.*/', '')) AS ObjectType,
+    REGEXP_REPLACE(t1.flatdata.`object`.definition.`type`, '.*/', '') AS ObjectTypemin
+FROM (
+    SELECT FLATTEN(statements) AS flatdata 
+    FROM dfs.statements.`*.json`
+) t1
+WHERE 
+    (
+        t1.flatdata.`verb`.id = 'http://activitystrea.ms/schema/1.0/access' 
+        OR t1.flatdata.`verb`.id = 'http://activitystrea.ms/schema/1.0/acknowledge' 
+        OR t1.flatdata.`verb`.id = 'http://activitystrea.ms/schema/1.0/complete'
+    )
+    AND NOT t1.flatdata.`object`.definition.`type` = 'http://smart.uliege.be/ulla/feedback/part'  
+    AND NOT t1.flatdata.`object`.definition.`type` = 'http://activitystrea.ms/schema/1.0/question'
+    """ .
+
+# ===============================
+# TriplesMap : Student
+# ===============================
+<#TriplesMapVerbObject> a rml:TriplesMap ;
+    rml:logicalSource <#LogicalSourceVerbObject> ;
+
+    rml:subjectMap [
+        rml:template "http://smart.uliege.be/prov-extension/student/{actor_account_name}" ;
+        rml:class ext:Student
+    ] ;
+
+    rml:predicateObjectMap [
+        rml:predicate foaf:name ;
+        rml:objectMap [ rml:reference "actor_account_name" ]
+    ] .
+
+# ===============================
+# TriplesMap : Verb (prov:Activity)
+# ===============================
+<#TriplesMapVerb> a rml:TriplesMap ;
+    rml:logicalSource <#LogicalSourceVerbObject> ; 
+    rml:subjectMap [
+        rml:template "http://smart.uliege.be/prov-extension/{Verbmin}/{id}" ;
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate rdf:type ;
+        rml:objectMap [ rml:template "http://smart.uliege.be/prov-extension#{Verb}" ]
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate prov:startedAtTime ;
+        rml:objectMap [ 
+            rml:reference "ts" ;
+            rml:datatype xsd:dateTime
+        ]
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate prov:wasAssociatedWith ;
+        rml:objectMap [
+            rml:template "http://smart.uliege.be/prov-extension/student/{actor_account_name}" ]
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate prov:used ;
+        rml:objectMap [
+            rml:template "http://smart.uliege.be/prov-extension/{ObjectTypemin}/{ObjectId}"
+        ]
+    ] .
+
+# ===============================
+# TriplesMap : Object (prov:Entity)
+# ===============================
+<#TriplesMapObject> a rml:TriplesMap ;
+    rml:logicalSource <#LogicalSourceVerbObject> ;
+    rml:subjectMap [
+        rml:template "http://smart.uliege.be/prov-extension/{ObjectTypemin}/{ObjectId}"
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate rdf:type ;
+        rml:objectMap [ rml:template "http://smart.uliege.be/prov-extension#{ObjectType}" ]
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate prov:wasAttributedTo ;
+        rml:objectMap [
+            rml:template "http://smart.uliege.be/prov-extension/student/{actor_account_name}"
+        ]
+    ] .

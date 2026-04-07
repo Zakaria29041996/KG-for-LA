@@ -1,0 +1,123 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@prefix ext: <http://smart.uliege.be/prov-extension#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema: <https://schema.org/> .
+
+
+<http://example.com/base/#DrillSource>  a d2rq:Database ;
+  d2rq:jdbcDSN "jdbc:drill:drillbit=localhost" ;  
+  d2rq:jdbcDriver "org.apache.drill.jdbc.Driver" ;
+  d2rq:username "" ;
+  d2rq:password "" .
+
+
+<#TriplesMapVerbObjectSource> 
+    rml:source <http://example.com/base/#DrillSource> ;
+    rml:referenceFormulation rml:SQL2008Query ;
+    rml:iterator """
+    SELECT 
+        t1.flatdata.id AS id,
+        t1.flatdata.actor.account.name AS actor_account_name,
+        t1.flatdata.`timestamp` AS ts,
+        SPLIT(t1.flatdata.`object`.id, '/')[5] AS FB_id,
+        CAST(SPLIT(t1.flatdata.`object`.id, '/')[7] AS INT) AS Part_number
+    FROM (
+        SELECT FLATTEN(statements) AS flatdata 
+        FROM dfs.statements.`*.json`
+    ) t1
+    WHERE 
+        t1.flatdata.`verb`.id = 'http://activitystrea.ms/schema/1.0/access'
+        AND t1.flatdata.`object`.definition.`type` = 'http://smart.uliege.be/ulla/feedback/part'
+    """ .
+
+# ===============================
+# TriplesMap : Student
+# ===============================
+<#TriplesMapStudent> a rml:TriplesMap ;
+    rml:logicalSource <#TriplesMapVerbObjectSource> ;
+    rml:subjectMap [
+        rml:template "http://smart.uliege.be/prov-extension/student/{actor_account_name}" ;
+        rml:class ext:Student ;
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate foaf:name ;
+        rml:objectMap [
+            rml:reference "actor_account_name" ;
+            rml:datatype xsd:string ;
+        ] ;
+    ] .
+
+# ===============================
+# TriplesMap : Access 
+# ===============================
+<#TriplesMapAccess> a rml:TriplesMap ;
+    rml:logicalSource <#TriplesMapVerbObjectSource> ;
+    rml:subjectMap [
+        rml:template "http://example.com/access/{id}" ;
+        rml:class ext:Access ;
+    ] ;
+
+    rml:predicateObjectMap [
+        rml:predicate prov:startedAtTime ;
+        rml:objectMap [
+            rml:reference "ts" ;
+            rml:datatype xsd:dateTime ;
+    ] 
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate prov:wasAssociatedWith ;
+        rml:objectMap [
+            rml:template "http://smart.uliege.be/prov-extension/student/{actor_account_name}"
+        ]
+    ] ;
+
+    rml:predicateObjectMap [
+        rml:predicate prov:used ;
+        rml:objectMap [
+            rml:template "http://smart.uliege.be/prov-extension/result/{actor_account_name}/{FB_id}/{Part_number}"
+        ]
+    ] .    
+
+# ===============================
+# TriplesMap : result
+# ===============================
+<#TriplesMapResult> a rml:TriplesMap ;
+    rml:logicalSource <#TriplesMapVerbObjectSource> ;
+    rml:subjectMap [
+        rml:template "http://smart.uliege.be/prov-extension/result/{actor_account_name}/{FB_id}/{Part_number}" ;
+        rml:class ext:PartialResult ;
+    ] ;
+
+    rml:predicateObjectMap [
+        rml:predicate schema:identifier ;
+        rml:objectMap [
+            rml:reference "Part_number" ;
+            rml:datatype xsd:integer ;
+        ]
+    ] ;
+
+    rml:predicateObjectMap [
+        rml:predicate prov:wasAttributedTo ;
+        rml:objectMap [
+            rml:template "http://smart.uliege.be/prov-extension/student/{actor_account_name}"
+        ]
+    ] .
+
+# ===============================
+# TriplesMap : Feedback
+# ===============================
+<#TriplesMapFBPart> a rml:TriplesMap ;
+    rml:logicalSource <#TriplesMapVerbObjectSource> ;
+    rml:subjectMap [
+        rml:template "http://smart.uliege.be/prov-extension/feedback/{FB_id}" ;
+        rml:class ext:Feedback ;
+    ] ;
+    rml:predicateObjectMap [
+        rml:predicate prov:hadMember ;
+        rml:objectMap [
+            rml:template "http://smart.uliege.be/prov-extension/result/{actor_account_name}/{FB_id}/{Part_number}"
+        ]
+    ] .

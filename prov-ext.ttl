@@ -1,0 +1,417 @@
+@prefix : <http://smart.uliege.be/prov-extension#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://smart.uliege.be/prov-extension#> .
+
+<http://smart.uliege.be/prov-extension#> rdf:type owl:Ontology ;
+                                          owl:versionIRI <http://smart.uliege.be/prov-extension#> ;
+                                          owl:imports <http://www.w3.org/ns/prov-o-20130430> .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://smart.uliege.be/prov-extension#activityType
+:activityType rdf:type owl:AnnotationProperty .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://smart.uliege.be/prov-extension#succeeds
+:succeeds rdf:type owl:ObjectProperty ,
+                   owl:TransitiveProperty ;
+          rdfs:domain <http://www.w3.org/ns/prov#SoftwareAgent> ;
+          rdfs:range <http://www.w3.org/ns/prov#SoftwareAgent> .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://smart.uliege.be/prov-extension#correctResponses
+:correctResponses rdf:type owl:DatatypeProperty ;
+                  rdfs:subPropertyOf :hasNumber .
+
+
+###  http://smart.uliege.be/prov-extension#grade
+:grade rdf:type owl:DatatypeProperty ;
+       rdfs:subPropertyOf <http://www.w3.org/ns/prov#value> ;
+       rdfs:domain :Result ;
+       rdfs:range xsd:float ;
+       rdfs:comment "La note de l'étudiant. La note minimale est 0, la note maximale est 20."@fr .
+
+
+###  http://smart.uliege.be/prov-extension#hasNumber
+:hasNumber rdf:type owl:DatatypeProperty ;
+           rdfs:domain :Result ;
+           rdfs:range xsd:integer .
+
+
+###  http://smart.uliege.be/prov-extension#incorrectResponses
+:incorrectResponses rdf:type owl:DatatypeProperty ;
+                    rdfs:subPropertyOf :hasNumber .
+
+
+###  http://smart.uliege.be/prov-extension#numberOfQuestions
+:numberOfQuestions rdf:type owl:DatatypeProperty ;
+                   rdfs:subPropertyOf owl:topDataProperty ;
+                   rdfs:domain :Survey ;
+                   rdfs:range xsd:int ;
+                   rdfs:comment "Number of questions asked in a Survey"@en .
+
+
+###  http://smart.uliege.be/prov-extension#omissions
+:omissions rdf:type owl:DatatypeProperty ;
+           rdfs:subPropertyOf :hasNumber .
+
+
+###  http://smart.uliege.be/prov-extension#position
+:position rdf:type owl:DatatypeProperty ;
+          rdfs:domain :Result ;
+          rdfs:range xsd:integer ;
+          rdfs:comment "La position de l'étudiant vis à vis de la classe en fonction de sa note"@fr .
+
+
+###  http://smart.uliege.be/prov-extension#softwareName
+:softwareName rdf:type owl:DatatypeProperty ,
+                       owl:FunctionalProperty ;
+              rdfs:domain <http://www.w3.org/ns/prov#SoftwareAgent> ;
+              rdfs:range xsd:string .
+
+
+###  http://smart.uliege.be/prov-extension#succeeds
+:succeeds rdf:type owl:DatatypeProperty .
+
+
+###  http://smart.uliege.be/prov-extension#success
+:success rdf:type owl:DatatypeProperty ;
+         rdfs:domain :GlobalResult ;
+         rdfs:range xsd:boolean ;
+         rdfs:comment "Quand un étudiant a une note > 10" .
+
+
+###  http://smart.uliege.be/prov-extension#successCount
+:successCount rdf:type owl:DatatypeProperty ;
+              rdfs:domain :Feedback ;
+              rdfs:range xsd:integer ;
+              rdfs:comment "The number of student who had a grade > 10"@en .
+
+
+###  http://smart.uliege.be/prov-extension#typeOfMood
+:typeOfMood rdf:type owl:DatatypeProperty ;
+            rdfs:domain :Mood .
+
+
+###  http://smart.uliege.be/prov-extension#version
+:version rdf:type owl:DatatypeProperty ,
+                  owl:FunctionalProperty ;
+         rdfs:domain <http://www.w3.org/ns/prov#SoftwareAgent> ;
+         rdfs:range xsd:string ;
+         rdfs:comment "Version of the software"@en .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://smart.uliege.be/prov-extension#Access
+:Access rdf:type owl:Class ;
+        rdfs:subClassOf <http://www.w3.org/ns/prov#Activity> ;
+        rdfs:comment "Indicates that the actor has accessed the object. For instance, a person accessing a room, or accessing a file."@en ;
+        rdfs:seeAlso "http://activitystrea.ms/schema/1.0/Access"@en .
+
+
+###  http://smart.uliege.be/prov-extension#Acknowledge
+:Acknowledge rdf:type owl:Class ;
+             rdfs:subClassOf <http://www.w3.org/ns/prov#Activity> ;
+             rdfs:comment "Indicates that the actor has acknowledged the object. This effectively signals that the actor is aware of the object's existence."@en ;
+             rdfs:seeAlso "http://activitystrea.ms/schema/1.0/acknowledge" .
+
+
+###  http://smart.uliege.be/prov-extension#Answer
+:Answer rdf:type owl:Class ;
+        rdfs:subClassOf <http://www.w3.org/ns/prov#Entity> ;
+        rdfs:comment "Reponse à une question"@fr .
+
+
+###  http://smart.uliege.be/prov-extension#Completed
+:Completed rdf:type owl:Class ;
+           rdfs:subClassOf <http://www.w3.org/ns/prov#Activity> ;
+           rdfs:comment "l'acteur a terminé l'objet (Test,Survey) associé. Eventuellement un élément 'Result' est associé au statement"@fr .
+
+
+###  http://smart.uliege.be/prov-extension#Enrolled
+:Enrolled rdf:type owl:Class ;
+          rdfs:subClassOf <http://www.w3.org/ns/prov#Activity> ;
+          rdfs:comment "L'utilisateur a accepté les condition d'utilisation du service."@fr ,
+                       "To put yourself or someone else on an official list for an activity or for membership in a group, or to accept someone in such a list."@en ;
+          rdfs:isDefinedBy "Cambridge dictionary"@en ;
+          rdfs:seeAlso "http://www.uliege.be/smart/xAPITerms/verbs/enrolled" .
+
+
+###  http://smart.uliege.be/prov-extension#Feedback
+:Feedback rdf:type owl:Class ;
+          rdfs:subClassOf <http://www.w3.org/ns/prov#Collection> ;
+          rdfs:comment "Un Feedback SMART"@fr ;
+          rdfs:label "Feedback" ;
+          rdfs:seeAlso "http://smart.uliege.be/ulla/feedback" .
+
+
+###  http://smart.uliege.be/prov-extension#GlobalResult
+:GlobalResult rdf:type owl:Class ;
+              rdfs:subClassOf :Result ;
+              rdfs:comment "Global result for an evaluation"@en .
+
+
+###  http://smart.uliege.be/prov-extension#Instructor
+:Instructor rdf:type owl:Class ;
+            rdfs:subClassOf <http://www.w3.org/ns/prov#Person> .
+
+
+###  http://smart.uliege.be/prov-extension#Launch
+:Launch rdf:type owl:Class ;
+        rdfs:subClassOf <http://www.w3.org/ns/prov#Activity> .
+
+
+###  http://smart.uliege.be/prov-extension#LoggedIn
+:LoggedIn rdf:type owl:Class ;
+          rdfs:subClassOf <http://www.w3.org/ns/prov#Activity> ;
+          rdfs:comment "L'utilisateur s'est connecté à l'application"@fr ;
+          rdfs:seeAlso "http://www.uliege.be/smart/xAPITerms/verbs/loggedin" .
+
+
+###  http://smart.uliege.be/prov-extension#LoggedOut
+:LoggedOut rdf:type owl:Class ;
+           rdfs:subClassOf <http://www.w3.org/ns/prov#Activity> ;
+           rdfs:comment "L'utilisateur s'est déconnecté et/ou a cloturé sa session dans l'application"@fr .
+
+
+###  http://smart.uliege.be/prov-extension#Message
+:Message rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.w3.org/ns/prov#Entity> ;
+         rdfs:comment "Un message à destination des étudiants"@fr ;
+         rdfs:label "Message" ;
+         rdfs:seeAlso "http://smart.uliege.be/ulla/message" .
+
+
+###  http://smart.uliege.be/prov-extension#Mood
+:Mood rdf:type owl:Class ;
+      rdfs:subClassOf <http://www.w3.org/ns/prov#Entity> ;
+      rdfs:comment "Un objet dédié aux émotions"@fr ;
+      rdfs:seeAlso "http://smart.uliege.be/ulla/moods" .
+
+
+###  http://smart.uliege.be/prov-extension#PartialResult
+:PartialResult rdf:type owl:Class ;
+               rdfs:subClassOf :Result ;
+               rdfs:comment "Result for a part of an evaluation."@en .
+
+
+###  http://smart.uliege.be/prov-extension#Provide
+:Provide rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.w3.org/ns/prov#Activity> ;
+         rdfs:comment "L'acteur à répondu à la question référencée par l'object associé. Le statement devra donc contenir un élément 'Result'."@fr ,
+                      "When the actor gives an Answer"@en .
+
+
+###  http://smart.uliege.be/prov-extension#Received
+:Received rdf:type owl:Class ;
+          rdfs:subClassOf <http://www.w3.org/ns/prov#Activity> ;
+          rdfs:comment "l'acteur a reçu un élément (Survey, Feeback, Message, ...) associé."@fr .
+
+
+###  http://smart.uliege.be/prov-extension#Result
+:Result rdf:type owl:Class ;
+        rdfs:subClassOf <http://www.w3.org/ns/prov#Entity> ;
+        rdfs:comment "Un Feedback SMART pour une partie de test"@fr ;
+        rdfs:seeAlso "http://smart.uliege.be/ulla/feedback/part" .
+
+
+###  http://smart.uliege.be/prov-extension#Student
+:Student rdf:type owl:Class ;
+         rdfs:subClassOf <http://www.w3.org/ns/prov#Person> .
+
+
+###  http://smart.uliege.be/prov-extension#Survey
+:Survey rdf:type owl:Class ;
+        rdfs:subClassOf <http://www.w3.org/ns/prov#Collection> ;
+        rdfs:comment "Une enquête à caractère pédagogique orientée LA"@fr ;
+        rdfs:seeAlso "http://id.tincanapi.com/activitytype/survey" .
+
+
+###  http://smart.uliege.be/prov-extension#SurveyQuestion
+:SurveyQuestion rdf:type owl:Class ;
+                rdfs:subClassOf <http://www.w3.org/ns/prov#Entity> ;
+                rdfs:comment "Une question associée à une enquête à caractère pédagogique orientée LA"@fr .
+
+
+###  http://smart.uliege.be/prov-extension#Update
+:Update rdf:type owl:Class ;
+        rdfs:subClassOf <http://www.w3.org/ns/prov#Activity> ;
+        rdfs:comment "The \"update\" verb indicates that the actor has modified the object. Implementors SHOULD use verbs such as \"post\" where the actor is adding new items to a collection or similar. Update is reserved for modifications to existing object or data such as changing a user's profile information."@en ;
+        rdfs:seeAlso <http://activitystrea.ms/schema/1.0/update> .
+
+
+###  http://www.w3.org/ns/prov#Activity
+<http://www.w3.org/ns/prov#Activity> rdf:type owl:Class .
+
+
+###  http://www.w3.org/ns/prov#Collection
+<http://www.w3.org/ns/prov#Collection> rdf:type owl:Class .
+
+
+###  http://www.w3.org/ns/prov#Entity
+<http://www.w3.org/ns/prov#Entity> rdf:type owl:Class .
+
+
+###  http://www.w3.org/ns/prov#Person
+<http://www.w3.org/ns/prov#Person> rdf:type owl:Class .
+
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  http://student.uliege/a81fdf1784282005caac658e15aa44db5c0fd4a8f8f9f83637dabe2c3f5decb7c8df9f36ae3b9bdd9e95084b764b5f0d
+<http://student.uliege/a81fdf1784282005caac658e15aa44db5c0fd4a8f8f9f83637dabe2c3f5decb7c8df9f36ae3b9bdd9e95084b764b5f0d> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/bb1e3205f45ba556798057cb070f6508aa37f857a6db8e2a0a2ac701f52d487b1a7108e3eb8754029e970331fad8e89e
+<http://student.uliege/bb1e3205f45ba556798057cb070f6508aa37f857a6db8e2a0a2ac701f52d487b1a7108e3eb8754029e970331fad8e89e> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/c0b61afbee0e3481b3d0c395e17d014a5263a37ffcf682bc5dc51be0dd225773c48eb5cd11a1c89b6123b6412d57ad83
+<http://student.uliege/c0b61afbee0e3481b3d0c395e17d014a5263a37ffcf682bc5dc51be0dd225773c48eb5cd11a1c89b6123b6412d57ad83> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/d3af77a7a7593644e3cdbdbd9738b06264139d431737b4b81d0df3fd78f81d261341228e460d5eea6074c5924eaf8b1e
+<http://student.uliege/d3af77a7a7593644e3cdbdbd9738b06264139d431737b4b81d0df3fd78f81d261341228e460d5eea6074c5924eaf8b1e> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/d85901a0056c486482f8fb286725297817db5c40a6ef8c692a1ef1f2c304cf15327efd99d80df602b2cf1160041fb348
+<http://student.uliege/d85901a0056c486482f8fb286725297817db5c40a6ef8c692a1ef1f2c304cf15327efd99d80df602b2cf1160041fb348> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/de4c85658d419ef14c99d0bd6e162298d4feeabcd9e2bf001cc8aa3fc610719bfe057306416a42f44ee1a70ade6f98b5
+<http://student.uliege/de4c85658d419ef14c99d0bd6e162298d4feeabcd9e2bf001cc8aa3fc610719bfe057306416a42f44ee1a70ade6f98b5> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/f241e937ec55cb6ad5a4b6ea882535278e7795d16b7f931d49845a803c4e7fbf70775eb9bb1f6cdde17c50cfc99847ae
+<http://student.uliege/f241e937ec55cb6ad5a4b6ea882535278e7795d16b7f931d49845a803c4e7fbf70775eb9bb1f6cdde17c50cfc99847ae> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/fa9b3bc0b217d5970990acae70dcfc0e18621d62a79b8ba5bf01ff067547b0eee6faf8ddfe44cdb036de01965c1e8bcb
+<http://student.uliege/fa9b3bc0b217d5970990acae70dcfc0e18621d62a79b8ba5bf01ff067547b0eee6faf8ddfe44cdb036de01965c1e8bcb> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/fe8b9077dcdd5279cec083ed53a7b4f36205898592d32031603b51ffac224b0247065a76fdbad8421c31800186c23bd4
+<http://student.uliege/fe8b9077dcdd5279cec083ed53a7b4f36205898592d32031603b51ffac224b0247065a76fdbad8421c31800186c23bd4> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/0c2b9395c83cf9ccaac232f51eb74b9b5c0823f6beaf01e198d9b87ab2769a15465ffa63cea0c20667f85947ac1ff753
+<http://student.uliege/0c2b9395c83cf9ccaac232f51eb74b9b5c0823f6beaf01e198d9b87ab2769a15465ffa63cea0c20667f85947ac1ff753> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/03d05f75905bd0e72792eb21285a233b83bc526a0aedc84aa58eaeca35e256be2c6adff75c831c76de1f13405d40c37f
+<http://student.uliege/03d05f75905bd0e72792eb21285a233b83bc526a0aedc84aa58eaeca35e256be2c6adff75c831c76de1f13405d40c37f> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/045a57d71fd4b1b65b26669c8d69ac701be7d8985912c4b24618eb0ca3eb31c4882e37d94826c18b11036ad0ccc76beb
+<http://student.uliege/045a57d71fd4b1b65b26669c8d69ac701be7d8985912c4b24618eb0ca3eb31c4882e37d94826c18b11036ad0ccc76beb> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/2d909cfe67b0f06233b82f66c4bc00b4720af16dfb902f68184110fe0ba99ccd6b7df974cf64bfe4eefc62caddf82c16
+<http://student.uliege/2d909cfe67b0f06233b82f66c4bc00b4720af16dfb902f68184110fe0ba99ccd6b7df974cf64bfe4eefc62caddf82c16> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/226ad1917bfc7055b11757f80346898a9b90337edc6697eb48c391bf92d82a9d1c5ad5b7679f7f117b89069aa042f1fb
+<http://student.uliege/226ad1917bfc7055b11757f80346898a9b90337edc6697eb48c391bf92d82a9d1c5ad5b7679f7f117b89069aa042f1fb> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/28c7dd4fa4f132be7f77451cba1b8785e595d048d56f69fe7a1c800916cb37b88cad8de407aa81b563fbc0c987cb5025
+<http://student.uliege/28c7dd4fa4f132be7f77451cba1b8785e595d048d56f69fe7a1c800916cb37b88cad8de407aa81b563fbc0c987cb5025> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/340a7c56a9589a2d270110917e9ac3c4dc50f930f0afd873fff4cd56fd761ca21e46cfcc7035e333160c1ec686d94d48
+<http://student.uliege/340a7c56a9589a2d270110917e9ac3c4dc50f930f0afd873fff4cd56fd761ca21e46cfcc7035e333160c1ec686d94d48> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/37c523274ae52fc07b21b66657bf26eef19fbf7ff381e09e7e885bb9149a43cb475d391871c9dca167561cbb3e86bd5c
+<http://student.uliege/37c523274ae52fc07b21b66657bf26eef19fbf7ff381e09e7e885bb9149a43cb475d391871c9dca167561cbb3e86bd5c> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/46e1dbe0961c2eb213628fb72ba5cb60dc01651bb659ec2efd3eb1f7e3998df66410dc3f1067630d2f31ab8935455200
+<http://student.uliege/46e1dbe0961c2eb213628fb72ba5cb60dc01651bb659ec2efd3eb1f7e3998df66410dc3f1067630d2f31ab8935455200> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/6d387e58575d63c63a8ce7225b39adbf58ea0bf4c91f10dc95be1ecedc6ef1ca57fb727e01f3d92091127d8ae8a3fcf2
+<http://student.uliege/6d387e58575d63c63a8ce7225b39adbf58ea0bf4c91f10dc95be1ecedc6ef1ca57fb727e01f3d92091127d8ae8a3fcf2> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/6e253180a511e653200a2d0538bb2492f39069937ca16b5c91064b5e48fbb9727e12087b759540b7cf0ffe48f3c809f7
+<http://student.uliege/6e253180a511e653200a2d0538bb2492f39069937ca16b5c91064b5e48fbb9727e12087b759540b7cf0ffe48f3c809f7> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/67908ca1a6bf3e91b96516ad0aca278bc5af84da34c80d0b35c50a6ab54017194cb39d40f3b002899a7dbdc241df547b
+<http://student.uliege/67908ca1a6bf3e91b96516ad0aca278bc5af84da34c80d0b35c50a6ab54017194cb39d40f3b002899a7dbdc241df547b> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/7007ce8facc3a31c1b901d6d0d695cf3cca9fbeae98d3546a38568330147cd6b8649f60d3d3a5b8505990dc789964a31
+<http://student.uliege/7007ce8facc3a31c1b901d6d0d695cf3cca9fbeae98d3546a38568330147cd6b8649f60d3d3a5b8505990dc789964a31> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/713db3b55bd711bb437f855bdf815f61cf242890fa02a319db29c32e2256ee7b6d685311f699e8325530b8b97985f540
+<http://student.uliege/713db3b55bd711bb437f855bdf815f61cf242890fa02a319db29c32e2256ee7b6d685311f699e8325530b8b97985f540> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/7600e2f281e1c2c9922a89e98fe2e7388a78b68f0a9a8ef87aa19ec6f1088ec2c771e983d22e1d5df2762c210bcbc70c
+<http://student.uliege/7600e2f281e1c2c9922a89e98fe2e7388a78b68f0a9a8ef87aa19ec6f1088ec2c771e983d22e1d5df2762c210bcbc70c> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/850eb061c6477e0a3b0c52eb359c362fcc5a93bea4f85c2cd27748ec44b849c8c91334461c4f78344afcb04cd2875658
+<http://student.uliege/850eb061c6477e0a3b0c52eb359c362fcc5a93bea4f85c2cd27748ec44b849c8c91334461c4f78344afcb04cd2875658> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+###  http://student.uliege/963f9947559dc466551c789bc0e68da7f3470c8b89c78ddf066842d6ee50ca96dc223ab2aee0101ccf06e5b809003ba3
+<http://student.uliege/963f9947559dc466551c789bc0e68da7f3470c8b89c78ddf066842d6ee50ca96dc223ab2aee0101ccf06e5b809003ba3> rdf:type owl:NamedIndividual ,
+                                                                                                                                  :Student .
+
+
+#################################################################
+#    Annotations
+#################################################################
+
+<http://www.w3.org/ns/prov#editorialNote> rdfs:isDefinedBy "Cambridge dictionary" .
+
+
+###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi

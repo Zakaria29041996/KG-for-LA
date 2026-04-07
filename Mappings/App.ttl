@@ -1,0 +1,112 @@
+@prefix swo: <http://www.ebi.ac.uk/swo/> .
+@prefix rml: <http://w3id.org/rml/> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix ext: <http://smart.uliege.be/prov-extension#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# --- Connexion Drill ---
+<http://example.com/base/#DrillSource> a d2rq:Database ;
+    d2rq:jdbcDSN "jdbc:drill:drillbit=localhost" ;
+    d2rq:jdbcDriver "org.apache.drill.jdbc.Driver" ;
+    d2rq:username "" ;
+    d2rq:password "" .
+
+<#DrillQueryVerb>
+    rml:source <http://example.com/base/#DrillSource> ;
+    rml:referenceFormulation rml:SQL2008Query ;
+    rml:iterator """
+        SELECT 
+            t1.flatdata.id AS id,
+            t1.flatdata.actor.account.name AS actor_account_name,
+            t1.flatdata.`timestamp` AS ts,
+            REGEXP_EXTRACT(
+                REGEXP_REPLACE(t1.flatdata.`object`.id, '/+$', ''),
+                '.*/([^/#]+)$',
+                1
+            ) AS version,
+            INITCAP(REGEXP_EXTRACT(
+                REGEXP_REPLACE(t1.flatdata.verb.id, '/+$', ''),
+                '.*/([^/#]+)$',
+                1
+            )) AS verb
+        FROM (
+            SELECT FLATTEN(statements) AS flatdata 
+            FROM dfs.statements.`*.json`
+        ) t1
+        WHERE 
+            t1.flatdata.`object`.definition.`type` = 'http://smart.uliege.be/ulla/mobileapp'
+    """ .
+
+# ===============================
+# TriplesMap : Student
+# ===============================
+<#TriplesMapStudentVerb> a rml:TriplesMap ;
+    rml:logicalSource <#DrillQueryVerb> ;
+
+    rml:subjectMap [
+        rml:template "http://smart.uliege.be/prov-extension/student/{actor_account_name}" ;
+        rml:class ext:Student
+    ] ;
+
+    rml:predicateObjectMap [
+        rml:predicate foaf:name ;
+        rml:objectMap [ rml:reference "actor_account_name" ]
+    ] .
+
+# ===============================
+# TriplesMap : Software (prov:SoftwareAgent)
+# ===============================
+<#TriplesMapSoftware> a rml:TriplesMap ;
+    rml:logicalSource <#DrillQueryVerb> ;
+
+    rml:subjectMap [
+        rml:template "http://smart.uliege.be/prov-extension/software/{version}" ;
+        rml:class prov:SoftwareAgent ;
+        rml:class swo:SWO_0000001 ;
+    ] ;
+
+    rml:predicateObjectMap [
+        rml:predicate ext:version ;
+        rml:objectMap [ rml:reference "version" ]
+    ] .
+
+# ===============================
+# TriplesMap : Verb Activity (prov:{verb})
+# ===============================
+<#TriplesMapVerbActivity> a rml:TriplesMap ;
+    rml:logicalSource <#DrillQueryVerb> ;
+
+    rml:subjectMap [
+        rml:template "http://smart.uliege.be/prov-extension/{verb}/{id}" ;
+    ] ;
+    rml:predicateObjectMap [
+    rml:predicate rdf:type ;
+    rml:objectMap [
+        rml:template "http://smart.uliege.be/prov-extension#{verb}"
+    ]
+  ] ;
+
+    rml:predicateObjectMap [
+        rml:predicate prov:startedAtTime ;
+        rml:objectMap [
+            rml:reference "ts" ;
+            rml:datatype xsd:dateTime
+        ]
+    ] ;
+
+    rml:predicateObjectMap [
+        rml:predicate prov:wasAssociatedWith ;
+        rml:objectMap [
+            rml:template "http://smart.uliege.be/prov-extension/student/{actor_account_name}"
+        ]
+    ] ;
+
+    rml:predicateObjectMap [
+        rml:predicate prov:wasAssociatedWith ;
+        rml:objectMap [
+            rml:template "http://smart.uliege.be/prov-extension/software/{version}"
+        ]
+    ] .

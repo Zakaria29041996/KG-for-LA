@@ -1,0 +1,58 @@
+@prefix rml: <http://w3id.org/rml/> .
+@prefix d2rq: <http://www.wiwiss.fu-berlin.de/suhl/bizer/D2RQ/0.1#> .
+@prefix swo: <http://www.ebi.ac.uk/swo/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix ext: <http://smart.uliege.be/prov-extension#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.com/base/#DrillSource>  a d2rq:Database ;
+  d2rq:jdbcDSN "jdbc:drill:drillbit=localhost" ;  
+  d2rq:jdbcDriver "org.apache.drill.jdbc.Driver" ;
+  d2rq:username "" ;
+  d2rq:password "" .
+
+<#TriplesMapVerbObject> a rml:TriplesMap ;
+  rml:logicalSource [
+    rml:source <http://example.com/base/#DrillSource> ;
+    rml:referenceFormulation rml:SQL2008Query ;
+    rml:iterator """
+    SELECT 
+        version,
+        LEAD(version) OVER (ORDER BY version) AS next_version
+    FROM (
+        SELECT DISTINCT
+          REGEXP_EXTRACT(
+            REGEXP_REPLACE(t1.flatdata.`object`.id, '/+$', ''),
+            '.*/([^/#]+)$',
+            1
+          ) AS version
+        FROM (
+          SELECT FLATTEN(statements) AS flatdata 
+          FROM dfs.statements.`*.json`
+        ) t1
+        WHERE 
+          t1.flatdata.`object`.definition.`type` = 'http://smart.uliege.be/ulla/mobileapp'
+    ) sub
+    ORDER BY version
+    """ ;
+  ] ;
+
+  rml:subjectMap [
+    rml:template "http://smart.uliege.be/prov-extension/software/{next_version}" ;
+    rml:class prov:SoftwareAgent ;
+    rml:class swo:SWO_0000001 ;
+  ] ;
+
+  rml:predicateObjectMap [
+    rml:predicate ext:version ;
+    rml:objectMap [
+      rml:reference "next_version"
+    ]
+  ] ;
+
+  rml:predicateObjectMap [
+    rml:predicate ext:succeeds ;
+    rml:objectMap [
+        rml:template "http://smart.uliege.be/prov-extension/software/{version}" ;
+    ]
+] .
