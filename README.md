@@ -2,11 +2,11 @@
 
 ## Overview
 
-This project aims to improve learning analytics by transforming raw xAPI data into a semantically enriched knowledge graph.
+This project focuses on building a **data engineering pipeline** to transform raw xAPI data into a semantically enriched knowledge graph for learning analytics.
 
 The SMART team at the University of Liège collects fine-grained student interaction data through the FB4You mobile application using the Experience API (xAPI). While xAPI standardizes data collection, the resulting datasets are semi-structured, heterogeneous, and difficult to analyze without complex queries and strong domain knowledge.
 
-This project addresses these challenges by converting raw JSON xAPI statements into a structured and queryable knowledge graph.
+This project addresses these challenges by converting raw JSON xAPI statements into a structured, interoperable, and queryable knowledge graph.
 
 ---
 
@@ -20,20 +20,20 @@ This project addresses these challenges by converting raw JSON xAPI statements i
 
 ---
 
-## Pipeline
+## Data Engineering Pipeline
 
 ```text
-xAPI JSON → Apache Drill → RML (BURP) → RDF Knowledge Graph 
+xAPI JSON → Apache Drill → RML (BURP) → RDF Knowledge Graph (N-Quads)
 ```
 
 ---
 
 ## Key Features
 
-* Transformation of semi-structured JSON into semantically rich RDF data
+* End-to-end data pipeline for semi-structured data transformation
 * Schema-on-read querying using Apache Drill
-* Semantic interoperability through ontology design (PROV-EXT)
-* Support for advanced analytical queries
+* Semantic enrichment via ontology design (PROV-EXT)
+* Support for complex analytical and semantic queries
 
 ---
 
@@ -51,17 +51,31 @@ The knowledge graph enables:
 
 * Improved data interpretability compared to raw JSON
 * Simplified complex analytical queries
-* Enabled more intuitive exploration of learning behaviors
+* Enabled intuitive exploration of learning behaviors
 
 ---
 
 ## Tech Stack
 
-* Apache Drill (SQL over JSON)
+* Apache Drill
 * RML mappings
-* BURP (mapping execution)
+* BURP
 * RDF / N-Quads
 * PROV-O + PROV-EXT ontology
+
+---
+
+## Data Availability
+
+Due to **GDPR (General Data Protection Regulation)** constraints, the original datasets and the generated knowledge graph cannot be publicly shared.
+
+However, this repository provides:
+
+* Mapping configurations
+* Pipeline setup instructions
+* Example queries
+
+to allow reproducibility on similar xAPI datasets.
 
 ---
 
@@ -76,4 +90,4 @@ The knowledge graph enables:
 
 ## Context
 
-This project was developed in the context of research on learning analytics at the University of Liège.
+This project was developed as part of research on learning analytics at the University of Liège.
