@@ -37,7 +37,7 @@
             FLATTEN(KVGEN(t1.flatdata.object.definition.extensions)) AS surveymap
         FROM (
             SELECT FLATTEN(statements) AS flatdata
-            FROM dfs.statements.`statements1[0-1]*.json`
+            FROM dfs.statements.`*.json`
         ) t1
         WHERE 
             t1.flatdata.`verb`.id = 'http://activitystrea.ms/schema/1.0/receive'
