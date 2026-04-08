@@ -23,7 +23,7 @@ This project addresses these challenges by converting raw JSON xAPI statements i
 ## Pipeline
 
 ```text
-xAPI JSON → Apache Drill → RML (BURP) → RDF Knowledge Graph (N-Quads)
+xAPI JSON → Apache Drill → RML (BURP) → RDF Knowledge Graph 
 ```
 
 ---
