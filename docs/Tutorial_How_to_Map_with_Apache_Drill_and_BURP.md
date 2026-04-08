@@ -128,15 +128,7 @@ java -jar BURP-0.1.2-SNAPSHOT.jar -m=ReceiveFbNoSB.ttl -o=ReceiveFbNoSB.nq
 java -jar BURP-0.1.2-SNAPSHOT.jar -m=AAC.ttl -o=AAC.nq
 java -jar BURP-0.1.2-SNAPSHOT.jar -m=ReceiveSurvey.ttl -o=ReceiveSurvey.nq
 java -jar BURP-0.1.2-SNAPSHOT.jar -m=AccessFbParts.ttl -o=AccessFbParts.nq
-java -jar BURP-0.1.2-SNAPSHOT.jar -m=ReceiveMessage1_01.ttl -o=ReceiveMessage1_01.nq
-java -jar BURP-0.1.2-SNAPSHOT.jar -m=ReceiveMessage17.ttl -o=ReceiveMessage17.nq
-java -jar BURP-0.1.2-SNAPSHOT.jar -m=ReceiveMessage16.ttl -o=ReceiveMessage16.nq
-java -jar BURP-0.1.2-SNAPSHOT.jar -m=ReceiveMessage2.ttl -o=ReceiveMessage2.nq
-java -jar BURP-0.1.2-SNAPSHOT.jar -m=ReceiveMessage18.ttl -o=ReceiveMessage18.nq
-java -jar BURP-0.1.2-SNAPSHOT.jar -m=ReceiveMessage19.ttl -o=ReceiveMessage19.nq
-java -jar BURP-0.1.2-SNAPSHOT.jar -m=ReceiveMessage1_35.ttl -o=ReceiveMessage1_35.nq
-java -jar BURP-0.1.2-SNAPSHOT.jar -m=ReceiveMessage1_23.ttl -o=ReceiveMessage1_23.nq
-java -jar BURP-0.1.2-SNAPSHOT.jar -m=ReceiveMessage3_9.ttl -o=ReceiveMessage3_9.nq
+java -jar BURP-0.1.2-SNAPSHOT.jar -m=ReceiveMessage.ttl -o=ReceiveMessage.nq
 ```
 
 
